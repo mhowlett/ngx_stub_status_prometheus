@@ -117,7 +117,7 @@ static ngx_int_t ngx_http_stub_status_prometheus_handler(ngx_http_request_t *r)
  
   b->last = ngx_cpymem(
     b->last,
-           "# TYPE nginx_connections_current gauge\n"
+           "# TYPE nginx_connections_current gauge\n",
     sizeof("# TYPE nginx_connections_current gauge\n") - 1
   );
 
@@ -149,7 +149,7 @@ static ngx_int_t ngx_http_stub_status_prometheus_handler(ngx_http_request_t *r)
  
   b->last = ngx_cpymem(
     b->last,
-           "# TYPE nginx_connections_processed_total counter\n"
+           "# TYPE nginx_connections_processed_total counter\n",
     sizeof("# TYPE nginx_connections_processed_total counter\n") - 1
   );
 
