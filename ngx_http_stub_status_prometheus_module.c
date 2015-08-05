@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <nginx.h>
 #include <ngx_config.h>
 #include <ngx_core.h>
@@ -51,36 +50,75 @@ ngx_module_t ngx_http_stub_status_prometheus_module = {
 
 static ngx_int_t ngx_http_stub_status_prometheus_handler(ngx_http_request_t *r)
 {
-  ngx_buf_t    *b;
-  ngx_chain_t   out;
-  ngx_str_t    result_body;
+  size_t             size;
+  ngx_int_t          rc;
+  ngx_buf_t         *b;
+  ngx_chain_t        out;
+  ngx_atomic_int_t   ap, hn, ac, rq, rd, wr, wa;
 
-  if (1)
-  {
-    return NGX_DECLINED;
+  if (r->method != NGX_HTTP_GET && r->method != NGX_HTTP_HEAD) {
+    return NGX_HTTP_NOT_ALLOWED;
   }
 
-  if (result_body.len == 0)
-  {
+  rc = ngx_http_discard_request_body(r);
+
+  if (rc != NGX_OK) {
+    return rc;
+  }
+
+  ngx_str_set(&r->headers_out.content_type, "text/plain");
+
+  if (r->method == NGX_HTTP_HEAD) {
+    r->headers_out.status = NGX_HTTP_OK;
+
+    rc = ngx_http_send_header(r);
+
+    if (rc == NGX_ERROR || rc > NGX_OK || r->header_only) {
+      return rc;
+    }
+  }
+
+  size = sizeof("Active connections:  \n") + NGX_ATOMIC_T_LEN
+    + sizeof("server accepts handled requests\n") - 1
+           + 6 + 3 * NGX_ATOMIC_T_LEN
+    + sizeof("Reading:  Writing:  Waiting:  \n") + 3 * NGX_ATOMIC_T_LEN;
+
+  b = ngx_create_temp_buf(r->pool, size);
+  if (b == NULL) {
     return NGX_HTTP_INTERNAL_SERVER_ERROR;
   }
-
-  r->headers_out.content_type.len = sizeof("application/json; charset=utf-8") - 1;
-  r->headers_out.content_type.data = (u_char *) "application/json; charset=utf-8";
-
-  b = ngx_pcalloc(r->pool, sizeof(ngx_buf_t));
 
   out.buf = b;
   out.next = NULL;
 
-  b->pos = result_body.data;
-  b->last = result_body.data + result_body.len;
-  b->memory = 1;
-  b->last_buf = 1;
+  ap = *ngx_stat_accepted;
+  hn = *ngx_stat_handled;
+  ac = *ngx_stat_active;
+  rq = *ngx_stat_requests;
+  rd = *ngx_stat_reading;
+  wr = *ngx_stat_writing;
+  wa = *ngx_stat_waiting;
+
+  b->last = ngx_sprintf(b->last, "Active connections: %uA \n", ac);
+
+  b->last = ngx_cpymem(b->last, "server accepts handled requests\n",
+		       sizeof("server accepts handled requests\n") - 1);
+
+  b->last = ngx_sprintf(b->last, " %uA %uA %uA \n", ap, hn, rq);
+
+  b->last = ngx_sprintf(b->last, "Reading: %uA Writing: %uA Waiting: %uA \n",
+			rd, wr, wa);
 
   r->headers_out.status = NGX_HTTP_OK;
-  r->headers_out.content_length_n = result_body.len;
-  ngx_http_send_header(r);
+  r->headers_out.content_length_n = b->last - b->pos;
+
+  b->last_buf = (r == r->main) ? 1 : 0;
+
+  rc = ngx_http_send_header(r);
+
+  if (rc == NGX_ERROR || rc > NGX_OK || r->header_only) {
+    return rc;
+  }
 
   return ngx_http_output_filter(r, &out);
 }
