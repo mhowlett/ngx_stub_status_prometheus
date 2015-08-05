@@ -66,7 +66,7 @@ static ngx_int_t ngx_http_stub_status_prometheus_handler(ngx_http_request_t *r)
     return rc;
   }
 
-  ngx_str_set(&r->headers_out.content_type, "text/plain");
+  ngx_str_set(&r->headers_out.content_type, "text/plain; version=0.0.4");
 
   if (r->method == NGX_HTTP_HEAD) {
     r->headers_out.status = NGX_HTTP_OK;
@@ -78,10 +78,20 @@ static ngx_int_t ngx_http_stub_status_prometheus_handler(ngx_http_request_t *r)
     }
   }
 
-  size = sizeof("Active connections:  \n") + NGX_ATOMIC_T_LEN
-    + sizeof("server accepts handled requests\n") - 1
-           + 6 + 3 * NGX_ATOMIC_T_LEN
-    + sizeof("Reading:  Writing:  Waiting:  \n") + 3 * NGX_ATOMIC_T_LEN;
+  size =
+    sizeof("# HELP nginx_connections_current Number of connections currently being processed by nginx\n") - 1 +
+    sizeof("# TYPE nginx_connections_current gauge\n") - 1 +
+    sizeof("nginx_connections_current{state=\"active\"} \n") +
+    sizeof("nginx_connections_current{state=\"reading\"} \n") +
+    sizeof("nginx_connections_current{state=\"writing\"} \n") +
+    sizeof("nginx_connections_current{state=\"waiting\"} \n") +
+    4 * NGX_ATOMIC_T_LEN +
+    sizeof("# HELP nginx_connections_processed_total Number of connections processed by nginx\n") - 1 +
+    sizeof("# TYPE nginx_connections_processed_total counter\n") - 1 +
+    sizeof("nginx_connections_processed_total{stage=\"accepts\"} \n") +
+    sizeof("nginx_connections_processed_total{stage=\"handled\"} \n") +
+    sizeof("nginx_connections_processed_total{stage=\"requests\"} \n") +
+    3 * NGX_ATOMIC_T_LEN;
 
   b = ngx_create_temp_buf(r->pool, size);
   if (b == NULL) {
@@ -99,15 +109,64 @@ static ngx_int_t ngx_http_stub_status_prometheus_handler(ngx_http_request_t *r)
   wr = *ngx_stat_writing;
   wa = *ngx_stat_waiting;
 
-  b->last = ngx_sprintf(b->last, "Active connections: %uA \n", ac);
+  b->last = ngx_cpymem(
+    b->last,
+           "# HELP nginx_connections_current Number of connections currently being processed by nginx\n",
+    sizeof("# HELP nginx_connections_current Number of connections currently being processed by nginx\n") - 1
+  );
+ 
+  b->last = ngx_cpymem(
+    b->last,
+           "# TYPE nginx_connections_current gauge\n"
+    sizeof("# TYPE nginx_connections_current gauge\n") - 1
+  );
 
-  b->last = ngx_cpymem(b->last, "server accepts handled requests\n",
-		       sizeof("server accepts handled requests\n") - 1);
+  b->last = ngx_sprintf(
+    b->last,
+    "nginx_connections_current{state=\"active\"} %uA\n", ac
+  );
 
-  b->last = ngx_sprintf(b->last, " %uA %uA %uA \n", ap, hn, rq);
+  b->last = ngx_sprintf(
+    b->last,
+    "nginx_connections_current{state=\"reading\"} %uA\n", rd
+  );
 
-  b->last = ngx_sprintf(b->last, "Reading: %uA Writing: %uA Waiting: %uA \n",
-			rd, wr, wa);
+  b->last = ngx_sprintf(
+    b->last,
+    "nginx_connections_current{state=\"writing\"} %uA\n", wr
+  );
+
+  b->last = ngx_sprintf(
+    b->last,
+    "nginx_connections_current{state=\"waiting\"} %uA\n", wa
+  );
+
+  b->last = ngx_cpymem(
+    b->last,
+           "# HELP nginx_connections_processed_total Number of connections processed by nginx\n",
+    sizeof("# HELP nginx_connections_processed_total Number of connections processed by nginx\n") - 1
+  );
+ 
+  b->last = ngx_cpymem(
+    b->last,
+           "# TYPE nginx_connections_processed_total counter\n"
+    sizeof("# TYPE nginx_connections_processed_total counter\n") - 1
+  );
+
+  b->last = ngx_sprintf(
+    b->last,
+    "nginx_connections_processed_total{stage=\"accepts\"} %uA\n", ap
+  );
+
+  b->last = ngx_sprintf(
+    b->last,
+    "nginx_connections_processed_total{stage=\"handled\"} %uA\n", hn
+  );
+
+  b->last = ngx_sprintf(
+    b->last,
+    "nginx_connections_processed_total{stage=\"requests\"} %uA\n", rq
+  );
 
   r->headers_out.status = NGX_HTTP_OK;
   r->headers_out.content_length_n = b->last - b->pos;
