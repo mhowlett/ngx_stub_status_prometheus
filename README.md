@@ -11,7 +11,7 @@ Nginx has no dynamic module support - modules must be compiled in. Fortunately, 
 
 Also, to make things even easier, I've created:
 
-1. A Dockerfile / image containing an nginx binary with stub_status_prometheus compiled in as well as a number of other commonly used modules that are not enabled by default (but which are included in the nginx builds in various distros).
+1. A Dockerfile / image containing an nginx binary with stub_status_prometheus compiled in as well as a number of other commonly used modules that are not enabled by default (but which are included in the nginx builds in various distros). You can either use this docker image, or copy the nginx executable out of it into your own environment. Note that this image is auto-built by docker hub from Dockerfiles on github so hopefully you are able to trust it.
 
 2. A set of scripts (*.sh) I use for building nginx in the mhowlett/nginx-build-base container. If you want to customize the build, I recommend using these as it's quicker than building a new docker image on each iteration.
 
@@ -21,7 +21,7 @@ You can run the container like so:
 
     docker run -d -p 8000 mhowlett/ngx_stub_status_prometheus
   
-This starts up nginx with a test configuration. If you browser to http://127.0.0.1:8000/ you should see the status information.
+This starts up nginx with a test configuration. If you browser to http://127.0.0.1:8000/metrics you should see the status information.
 
 To supply your own configuration, you could add a data volume at the standard config file location:
 
@@ -61,6 +61,8 @@ Here is a complete, minimalistic configuration:
 
 This will serve status information at /metrics.
 
+If other locations on this server are publically accessible, the status information will be as well. In order to prevent public access, you can use https and basic auth as described here: http://prometheus.io/docs/operating/configuration/#scrape-configurations-scrape_config
+
 Unlike stub_status, stub_status_prometheus does not expose any variables corresponding to the status information. 
-If you need these, you can use the stub_status module alongside stub_status_prometheus.
+If you need these, you can use the stub_status module alongside the prometheus status module.
 Note that the stub_status directive can be placed in a server context for this purpose (does not need to be placed in location context).
