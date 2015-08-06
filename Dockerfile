@@ -23,6 +23,6 @@ RUN \
   && rm -rf /etc/nginx \
   && mkdir /etc/nginx
 
-COPY nginx.conf /etc/nginx
+COPY nginx.conf /etc/nginx/
 
 CMD nginx
