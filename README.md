@@ -2,7 +2,7 @@
 
 This is an nginx module that provides access to the same information as the standard stub_status module but in a format recognized by the <a href="http://prometheus.io">prometheus</a> time-series database.
 
-Only the plain text exposition format is currently supported. I will likely implement the protobuf format in the future, though I think any benefit would be negligible in most scenarios I can think of.
+Only the plain text exposition format is currently supported. I will likely add the protobuf format in the future, though as noted in the Prometheus Client Library Guidelines document I expect any benefit would be negligible in most scenarios.
 
 
 ## Installation
@@ -19,7 +19,7 @@ Also, to make things even easier, I've created:
 
 You can run the container like so:
 
-    docker run -d -p 8000:80 mhowlett/ngx_stub_status_prometheus
+    docker run -d -p 8000 mhowlett/ngx_stub_status_prometheus
   
 This starts up nginx with a test configuration. If you browser to http://127.0.0.1:8000/ you should see the status information.
 
@@ -29,7 +29,7 @@ To supply your own configuration, you could add a data volume at the standard co
 
 Or you could put it in a different location and specify this as an argument: 
 
-    docker run -d -v youll-need-something-here mhowlett/nginx_stub_status_prometheus nginx -c /absolute/path/to/mynginx.conf
+    docker run -d -v you-will-need-something-here mhowlett/nginx_stub_status_prometheus nginx -c /absolute/path/to/mynginx.conf
 
 ### Building
 
@@ -44,10 +44,23 @@ To cut a long story short:
 
 ## Usage
 
-    stub_status_prometheus;
+Place the stub_status_prometheus directive in a location context. 
+Here is a complete, minimalistic configuration:
 
-note that --with-stub-status is specified in the included build script, but it is not a pre-requisite.
+    events {
+    }
 
-Must be placed within a location section in the nginx.config. prometheus friendly status information will be provided at that location.
+    http {
+      server {
+        listen 80;
+        location / {
+          stub_status_prometheus;
+        }
+      }
+    }
 
-Does not expose any nginx variables (c.f. stub_status which does). If you need these variables, you can use stub_status in addition to stub_status_prometheus. note that stub_status does not need to be placed in a location section, you can also put it in the server section.
+This will serve status information at the root url path.
+
+Unlike stub_status, stub_status_prometheus does not expose any variables corresponding to the status information. 
+If you need these, you can use the stub_status module alongside stub_status_prometheus.
+Note that in doing this, the stub_status directive can be placed in a server context (does not need to be placed in location context).
