@@ -59,7 +59,7 @@ Here is a complete, minimalistic configuration:
       }
     }
 
-This will serve status information at /metrics.
+This will serve status information at /metrics. Note that this includes all the requests to the metrics endpoint by the prometheus server.
 
 If this server is publically accessible, the status information will be as well. In order to prevent public access, you can use https and basic auth as described here: http://prometheus.io/docs/operating/configuration/#scrape-configurations-scrape_config
 
