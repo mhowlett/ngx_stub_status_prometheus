@@ -19,9 +19,8 @@ RUN \
     --with-http_realip_module \
     --with-http_stub_status_module \
   && make \
-  && make install \
-  && rm -rf /etc/nginx/nginx.conf
+  && make install
 
-COPY nginx.conf /etc/nginx/
+COPY nginx.conf /etc/
 
 CMD nginx
