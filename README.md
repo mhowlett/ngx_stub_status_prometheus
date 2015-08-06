@@ -43,7 +43,7 @@ To cut a long story short:
 
 ## Usage
 
-Place the stub_status_prometheus directive in a location context. 
+Place the stub_status_prometheus directive in a /metrics location context, as expected by prometheus.
 Here is a complete, minimalistic configuration:
 
     events {
@@ -58,7 +58,6 @@ Here is a complete, minimalistic configuration:
       }
     }
 
-This will serve status information at /metrics. Note that this includes all the requests to the metrics endpoint by the prometheus server.
 
 In order to prevent public access, you can use the auto and deny directives, or https and basic auth as described here: http://prometheus.io/docs/operating/configuration/#scrape-configurations-scrape_config 
 
@@ -66,6 +65,8 @@ Unlike stub_status, stub_status_prometheus does not expose any variables corresp
 If you need these, you can use the stub_status module alongside the prometheus status module.
 Note that the stub_status directive can be placed in a server context for this purpose (does not need to be placed in location context).
 
-The stub_status_prometheus directive takes no parameters.
+Misc notes:
 
-The status information exposed relates to the entire nginx server, not the server context in which it is contained.
+1. The stub_status_prometheus directive takes no parameters.
+2. The statistics reported are impacted by requests to the metrics endpoint by the prometheus server.
+3. The status information exposed relates to the entire nginx server, not the server context in which it is contained.
