@@ -10,7 +10,7 @@ COPY ngx_http_stub_status_prometheus_module.c /root/build/
 RUN \
      NGINX_VERSION=1.9.3 \
   && CFLAGS="-O2" \
-  && cd $BUILDDIR
+  && cd $BUILDDIR \
   && curl -sSL http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxfv - -C . \
   && cd nginx-$NGINX_VERSION \
   && ./configure \
