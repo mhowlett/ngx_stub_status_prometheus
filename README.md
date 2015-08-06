@@ -2,7 +2,7 @@
 
 This is an nginx module that provides access to the same information as the standard stub_status module but in a format recognized by the <a href="http://prometheus.io">prometheus</a> time-series database.
 
-Only the plain text exposition format is currently supported. I will likely add the protobuf format in the future, though as noted in the Prometheus Client Library Guidelines document I expect any benefit would be negligible in most scenarios.
+Only the plain text exposition format is currently supported. I will likely add the protobuf format in the future, though as noted in the Prometheus Client Library Guidelines document I expect any benefit would not be significant in most scenarios.
 
 
 ## Installation
@@ -53,14 +53,14 @@ Here is a complete, minimalistic configuration:
     http {
       server {
         listen 80;
-        location / {
+        location /metrics {
           stub_status_prometheus;
         }
       }
     }
 
-This will serve status information at the root url path.
+This will serve status information at /metrics.
 
 Unlike stub_status, stub_status_prometheus does not expose any variables corresponding to the status information. 
 If you need these, you can use the stub_status module alongside stub_status_prometheus.
-Note that in doing this, the stub_status directive can be placed in a server context (does not need to be placed in location context).
+Note that the stub_status directive can be placed in a server context for this purpose (does not need to be placed in location context).
