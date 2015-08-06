@@ -27,11 +27,13 @@ To supply your own configuration, you could add a data volume at the standard co
 
 Or you could put it in a different location and specifythis as an argument: 
 
-    docker run -d -v you-will-need-something-here mhowlett/nginx_stub_status_prometheus nginx -c /absolute/path/to/mynginx.conf
+    docker run -d -v youll-need-something-here mhowlett/nginx_stub_status_prometheus nginx -c /absolute/path/to/mynginx.conf
 
 ### Building
 
-1. Run fetch-nginx.sh
+To cut a long story short:
+
+1. ./fetch-nginx.sh
 2. ./docker-up.sh
 3. cd /repo
 4. /build.sh
