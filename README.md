@@ -61,7 +61,7 @@ Here is a complete, minimalistic configuration:
 
 This will serve status information at /metrics. Note that this includes all the requests to the metrics endpoint by the prometheus server.
 
-In order to prevent public access, yet still allow a remote prometheus server to access the status info, you can use https and basic auth as described here: http://prometheus.io/docs/operating/configuration/#scrape-configurations-scrape_config . If your prometheus server is local, you can use the allow and deny directives.
+In order to prevent public access, you can use the auto and deny directives, or https and basic auth as described here: http://prometheus.io/docs/operating/configuration/#scrape-configurations-scrape_config 
 
 Unlike stub_status, stub_status_prometheus does not expose any variables corresponding to the status information. 
 If you need these, you can use the stub_status module alongside the prometheus status module.
