@@ -12,7 +12,7 @@ RUN \
   && cd nginx-$NGINX_VERSION \
   && ./configure \
     --prefix=/usr \
-    --conf-path=/etc/nginx \
+    --conf-path=/etc/nginx/nginx.conf \
     --add-module=../ \
     --with-http_ssl_module \
     --with-http_spdy_module \
@@ -20,8 +20,7 @@ RUN \
     --with-http_stub_status_module \
   && make \
   && make install \
-  && rm -rf /etc/nginx \
-  && mkdir /etc/nginx
+  && rm -rf /etc/nginx/nginx.conf
 
 COPY nginx.conf /etc/nginx/
 
