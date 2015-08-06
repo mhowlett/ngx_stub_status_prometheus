@@ -2,6 +2,8 @@
 
 This is an nginx module that provides access to the same information as the standard stub_status module but in a format recognized by the <a href="http://prometheus.io">prometheus</a> time-series database.
 
+Only the plain text exposition format is currently supported. I will likely implement the protobuf format in the future, though I think any benefit would be negligible in most scenarios I can think of.
+
 
 ## Installation
 
@@ -25,7 +27,7 @@ To supply your own configuration, you could add a data volume at the standard co
 
     docker run -d -v mynginx.conf:/etc/nginx/nginx.conf mhowlett/nginx_stub_status_prometheus
 
-Or you could put it in a different location and specifythis as an argument: 
+Or you could put it in a different location and specify this as an argument: 
 
     docker run -d -v youll-need-something-here mhowlett/nginx_stub_status_prometheus nginx -c /absolute/path/to/mynginx.conf
 
