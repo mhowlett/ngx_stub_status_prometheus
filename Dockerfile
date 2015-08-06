@@ -2,15 +2,15 @@ FROM mhowlett/nginx-build-base
 
 RUN \
      BUILDDIR=/build \
-  && mkdir /build
+  && mkdir $BUILDDIR
 
 COPY config /build
 COPY ngx_http_stub_status_prometheus_module.c /build
 
 RUN \
-     NGINX_VERSION=1.9.3 \
+     BUILDDIR=/build \
+  && NGINX_VERSION=1.9.3 \
   && CFLAGS="-O2" \
-  && mkdir $BUILDDIR \
   && cd $BUILDDIR \
   && curl -sSL http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz | tar zxfv - -C . \
   && cd nginx-$NGINX_VERSION \
