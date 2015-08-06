@@ -1,9 +1,6 @@
 FROM mhowlett/nginx-build-base
 
-RUN \
-    BUILDDIR=/root/build \
- && mkdir $BUILDDIR
-
+RUN mkdir /root/build
 COPY config /root/build/
 COPY ngx_http_stub_status_prometheus_module.c /root/build/
 
