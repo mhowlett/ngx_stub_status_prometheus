@@ -5,40 +5,44 @@ This is an nginx module that provides access to the same information as the stan
 
 ## Installation
 
-Unfortunately nginx has no dynamic module support - modules must be compiled in. Fortunately, this isn't that hard and there is plenty of information out there to help you out.
+Nginx has no dynamic module support - modules must be compiled in. Fortunately, this isn't so hard and there is plenty of information out there to help you out.
 
 Also, to make things even easier, I've created:
 
-1. A Dockerfile / image containing an nginx binary with stub_status_prometheus compiled in, as well as a number of other commonly used modules that are not enabled by default (but which are included in the nginx builds in various distros).
+1. A Dockerfile / image containing an nginx binary with stub_status_prometheus compiled in as well as a number of other commonly used modules that are not enabled by default (but which are included in the nginx builds in various distros).
 
 2. A set of scripts (*.sh) I use for building nginx in the mhowlett/nginx-build-base container. If you want to customize the build, I recommend using these as it's quicker than building a new docker image on each iteration.
 
 ### Docker Image
 
+You can run the container like so:
+
+    docker run -d -p 8000:80 mhowlett/ngx_stub_status_prometheus
+  
+This starts up nginx with a test configuration. If you browser to http://127.0.0.1:8000/ you should see the status information.
+
+To supply your own configuration, you could add a data volume at the standard config file location:
+
+    docker run -d -v mynginx.conf:/etc/nginx/nginx.conf mhowlett/nginx_stub_status_prometheus
+
+Or you could put it in a different location and specifythis as an argument: 
+
+    docker run -d -v you-will-need-something-here mhowlett/nginx_stub_status_prometheus nginx -c /absolute/path/to/mynginx.conf
 
 ### Building
 
-A docker image (mhowlett/nginx-build-base) that provides a suitable environment and these long-winded instructions:
+1. Run fetch-nginx.sh
+2. ./docker-up.sh
+3. cd /repo
+4. /build.sh
+5. /usr/sbin/nginx -c /repo/nginx.text.conf
 
-There is a script included in this repo called docker-up.sh which can be used to bring up the nginx build container. Before you run it, you'll need to edit it to specify the absolute path of this git repository on your system.
-
-You'll also need to get a copy the nginx source and put it in the top level of the git repository. This can be done by running the script download-nginx.sh (it fetches version 1.9.3 and then un-tars it).
-
-Now you're ready to go. 
-
-    ./docker-up.sh
-    cd /repo
-    ./build.sh
-
-to test:
-
-    /usr/sbin/nginx -c /repo/nginx.test.conf
-
-note that --with-stub-status is specified in the included build script, but it is not a pre-requisite.
 
 ## Usage
 
     stub_status_prometheus;
+
+note that --with-stub-status is specified in the included build script, but it is not a pre-requisite.
 
 Must be placed within a location section in the nginx.config. prometheus friendly status information will be provided at that location.
 
