@@ -8,7 +8,7 @@ Information is currently only produced in the plain text exposition format. I wi
 
 Nginx has no dynamic module support - modules must be compiled in. Fortunately, this isn't so hard and there is plenty of information out there to help you out.
 
-Also, to make things even easier, this repo includes:
+To make things even easier, this repo also includes:
 
 1. A Dockerfile / image containing an nginx binary that includes stub_status_prometheus as well as a number of other commonly used modules that are not enabled by default (but which are included in the nginx builds in various distros). You can either use this docker image, or copy the nginx executable out of it into your own environment. Note that this image is auto-built by docker hub from Dockerfiles on github so hopefully you are able to trust it.
 
@@ -20,7 +20,7 @@ You can run the container like so:
 
     docker run -d -p 8000 mhowlett/ngx_stub_status_prometheus
   
-This starts up nginx with a test configuration. If you browser to http://127.0.0.1:8000/metrics you should see the status information.
+This starts up nginx with a test configuration. If you browse to http://127.0.0.1:8000/metrics you should see the status information.
 
 To supply your own configuration, you could add a data volume at the standard nginx config file location:
 
