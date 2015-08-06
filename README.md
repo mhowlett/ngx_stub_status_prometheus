@@ -1,16 +1,24 @@
 # ngx_stub_status_prometheus
 
-COMPLETELY NOT IMPLEMENTED! 
-
-The stub doesn't even compile yet, let alone have any functionaltiy in it.
-
 This is an nginx module that provides access to the same information as the standard stub_status module but in a format recognized by the <a href="http://prometheus.io">prometheus</a> time-series database.
 
-Unfortunately nginx has no dynamic module support - modules must be compiled in.
 
-Fortunately, this isn't that hard and there is plenty of information out there to help you out.
+## Installation
 
-To make things even easier, I've created a docker image (mhowlett/nginx-build-base) that provides a suitable environment and these long-winded instructions:
+Unfortunately nginx has no dynamic module support - modules must be compiled in. Fortunately, this isn't that hard and there is plenty of information out there to help you out.
+
+Also, to make things even easier, I've created:
+
+1. A Dockerfile / image containing an nginx binary with stub_status_prometheus compiled in, as well as a number of other commonly used modules that are not enabled by default (but which are included in the nginx builds in various distros).
+
+2. A set of scripts (*.sh) I use for building nginx in the mhowlett/nginx-build-base container. If you want to customize the build, I recommend using these as it's quicker than building a new docker image on each iteration.
+
+### Docker Image
+
+
+### Building
+
+A docker image (mhowlett/nginx-build-base) that provides a suitable environment and these long-winded instructions:
 
 There is a script included in this repo called docker-up.sh which can be used to bring up the nginx build container. Before you run it, you'll need to edit it to specify the absolute path of this git repository on your system.
 
