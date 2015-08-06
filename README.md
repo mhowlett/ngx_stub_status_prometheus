@@ -1,19 +1,18 @@
 # ngx_stub_status_prometheus
 
-This is an nginx module that provides access to the same information as the standard stub_status module but in a format recognized by the <a href="http://prometheus.io">prometheus</a> time-series database.
+This is an nginx module that provides the same information as the standard stub_status module but in a format recognized by the <a href="http://prometheus.io">prometheus</a> time-series database.
 
-Only the plain text exposition format is currently supported. I will likely add the protobuf format in the future, though as noted in the Prometheus Client Library Guidelines document I expect any benefit would not be significant in most scenarios.
-
+Information is currently only produced in the plain text exposition format. I will likely add the protobuf format in the future, though as noted in the Prometheus Client Library Guidelines document, any benefit would probably not be significant in most scenarios.
 
 ## Installation
 
 Nginx has no dynamic module support - modules must be compiled in. Fortunately, this isn't so hard and there is plenty of information out there to help you out.
 
-Also, to make things even easier, I've created:
+Also, to make things even easier, this repo includes:
 
-1. A Dockerfile / image containing an nginx binary with stub_status_prometheus compiled in as well as a number of other commonly used modules that are not enabled by default (but which are included in the nginx builds in various distros). You can either use this docker image, or copy the nginx executable out of it into your own environment. Note that this image is auto-built by docker hub from Dockerfiles on github so hopefully you are able to trust it.
+1. A Dockerfile / image containing an nginx binary that includes stub_status_prometheus as well as a number of other commonly used modules that are not enabled by default (but which are included in the nginx builds in various distros). You can either use this docker image, or copy the nginx executable out of it into your own environment. Note that this image is auto-built by docker hub from Dockerfiles on github so hopefully you are able to trust it.
 
-2. A set of scripts (*.sh) I use for building nginx in the mhowlett/nginx-build-base container. If you want to customize the build, I recommend using these as it's quicker than building a new docker image on each iteration.
+2. A set of scripts (*.sh) I use for building nginx in the mhowlett/nginx-build-base container. If you want to customize the build, you could use these as it's quicker than building a new docker image on each iteration.
 
 ### Docker Image
 
@@ -23,7 +22,7 @@ You can run the container like so:
   
 This starts up nginx with a test configuration. If you browser to http://127.0.0.1:8000/metrics you should see the status information.
 
-To supply your own configuration, you could add a data volume at the standard config file location:
+To supply your own configuration, you could add a data volume at the standard nginx config file location:
 
     docker run -d -v mynginx.conf:/etc/nginx/nginx.conf mhowlett/nginx_stub_status_prometheus
 
@@ -69,4 +68,4 @@ Note that the stub_status directive can be placed in a server context for this p
 
 The stub_status_prometheus directive takes no parameters.
 
-Note: The status information relates to the entire nginx server, not the server context in which it is contained. 
+The status information exposed relates to the entire nginx server, not the server context in which it is contained.
