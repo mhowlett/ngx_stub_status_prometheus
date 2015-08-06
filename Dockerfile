@@ -20,7 +20,7 @@ RUN \
     --with-http_stub_status_module \
   && make \
   && make install \
-  && mkdir /etc/nginx
+  && rm -rf /etc/nginx/nginx.conf
 
 COPY nginx.conf /etc/nginx/
 
