@@ -21,6 +21,6 @@ RUN \
   && make \
   && make install
 
-COPY nginx.test.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/
 
 CMD nginx

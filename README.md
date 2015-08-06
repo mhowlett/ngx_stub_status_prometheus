@@ -39,7 +39,7 @@ To cut a long story short:
 2. ./docker-up.sh
 3. cd /repo
 4. /build.sh
-5. /usr/sbin/nginx -c /repo/nginx.text.conf
+5. /usr/sbin/nginx -c /repo/nginx.conf
 
 
 ## Usage
