@@ -79,18 +79,24 @@ static ngx_int_t ngx_http_stub_status_prometheus_handler(ngx_http_request_t *r)
   }
 
   size =
+    sizeof("# HELP nginx_active_connections_current Current number of active connections\n") - 1 +
+    sizeof("# TYPE nginx_active_connections_current gauge\n") - 1 +
+    sizeof("nginx_active_connections_current \n") +
+    NGX_ATOMIC_T_LEN +
     sizeof("# HELP nginx_connections_current Number of connections currently being processed by nginx\n") - 1 +
     sizeof("# TYPE nginx_connections_current gauge\n") - 1 +
-    sizeof("nginx_connections_current{state=\"active\"} \n") +
     sizeof("nginx_connections_current{state=\"reading\"} \n") +
     sizeof("nginx_connections_current{state=\"writing\"} \n") +
     sizeof("nginx_connections_current{state=\"waiting\"} \n") +
-    4 * NGX_ATOMIC_T_LEN +
-    sizeof("# HELP nginx_connections_total Total number of connections processed by nginx\n") - 1 +
-    sizeof("# TYPE nginx_connections_total counter\n") - 1 +
-    sizeof("nginx_connections_total{stage=\"accepts\"} \n") +
-    sizeof("nginx_connections_total{stage=\"handled\"} \n") +
-    2 * NGX_ATOMIC_T_LEN +
+    3 * NGX_ATOMIC_T_LEN +
+    sizeof("# HELP nginx_connections_accepted_total Total number of connections accepted by nginx\n") - 1 +
+    sizeof("# TYPE nginx_connections_accepted_total counter\n") - 1 +
+    sizeof("nginx_connections_accepted_total \n") +
+    NGX_ATOMIC_T_LEN +
+    sizeof("# HELP nginx_connections_handled_total Total number of connections handled by nginx\n") - 1 +
+    sizeof("# TYPE nginx_connections_handled_total counter\n") - 1 +
+    sizeof("nginx_connections_handled_total \n") +
+    NGX_ATOMIC_T_LEN +
     sizeof("# HELP nginx_requests_total Total number of requests processed by nginx\n") - 1 +
     sizeof("# TYPE nginx_requests_total counter\n") - 1 +
     sizeof("nginx_requests_total \n") +
@@ -114,6 +120,23 @@ static ngx_int_t ngx_http_stub_status_prometheus_handler(ngx_http_request_t *r)
 
   b->last = ngx_cpymem(
     b->last,
+           "# HELP nginx_active_connections_current Current number of active connections\n",
+    sizeof("# HELP nginx_active_connections_current Current number of active connections\n") - 1
+  );
+
+  b->last = ngx_cpymem(
+    b->last,
+           "# TYPE nginx_active_connections_current gauge\n",
+    sizeof("# TYPE nginx_active_connections_current gauge\n") - 1
+  );
+
+  b->last = ngx_sprintf(
+    b->last,
+    "nginx_active_connections_current %uA\n", ac
+  );
+
+  b->last = ngx_cpymem(
+    b->last,
            "# HELP nginx_connections_current Number of connections currently being processed by nginx\n",
     sizeof("# HELP nginx_connections_current Number of connections currently being processed by nginx\n") - 1
   );
@@ -122,11 +145,6 @@ static ngx_int_t ngx_http_stub_status_prometheus_handler(ngx_http_request_t *r)
     b->last,
            "# TYPE nginx_connections_current gauge\n",
     sizeof("# TYPE nginx_connections_current gauge\n") - 1
-  );
-
-  b->last = ngx_sprintf(
-    b->last,
-    "nginx_connections_current{state=\"active\"} %uA\n", ac
   );
 
   b->last = ngx_sprintf(
@@ -146,24 +164,36 @@ static ngx_int_t ngx_http_stub_status_prometheus_handler(ngx_http_request_t *r)
 
   b->last = ngx_cpymem(
     b->last,
-           "# HELP nginx_connections_total Total number of connections processed by nginx\n",
-    sizeof("# HELP nginx_connections_total Total number of connections processed by nginx\n") - 1
+           "# HELP nginx_connections_accepted_total Total number of connections accepted by nginx\n",
+    sizeof("# HELP nginx_connections_accepted_total Total number of connections accepted by nginx\n") - 1
   );
 
   b->last = ngx_cpymem(
     b->last,
-           "# TYPE nginx_connections_total counter\n",
-    sizeof("# TYPE nginx_connections_total counter\n") - 1
+           "# TYPE nginx_connections_accepted_total counter\n",
+    sizeof("# TYPE nginx_connections_accepted_total counter\n") - 1
   );
 
   b->last = ngx_sprintf(
     b->last,
-    "nginx_connections_total{stage=\"accepts\"} %uA\n", ap
+    "nginx_connections_accepted_total %uA\n", ap
+  );
+
+  b->last = ngx_cpymem(
+    b->last,
+           "# HELP nginx_connections_handled_total Total number of connections handled by nginx\n",
+    sizeof("# HELP nginx_connections_handled_total Total number of connections handled by nginx\n") - 1
+  );
+
+  b->last = ngx_cpymem(
+    b->last,
+           "# TYPE nginx_connections_handled_total counter\n",
+    sizeof("# TYPE nginx_connections_handled_total counter\n") - 1
   );
 
   b->last = ngx_sprintf(
     b->last,
-    "nginx_connections_total{stage=\"handled\"} %uA\n", hn
+    "nginx_connections_handled_total %uA\n", hn
   );
 
   b->last = ngx_cpymem(

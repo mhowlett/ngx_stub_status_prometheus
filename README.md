@@ -18,17 +18,17 @@ To make things even easier, this repo also includes:
 
 You can run the container like so:
 
-    docker run -d -p 8000 mhowlett/ngx_stub_status_prometheus
+    docker run -d -p 8000 mhowlett/ngx-stub-status-prometheus
 
 This starts up nginx with a test configuration. If you browse to http://127.0.0.1:8000/metrics you should see the status information.
 
 To supply your own configuration, you could add a data volume at the standard nginx config file location:
 
-    docker run -d -v mynginx.conf:/etc/nginx/nginx.conf mhowlett/nginx_stub_status_prometheus
+    docker run -d -v mynginx.conf:/etc/nginx/nginx.conf mhowlett/nginx-stub-status-prometheus
 
 Or you could put it in a different location and specify this as an argument:
 
-    docker run -d -v you-will-need-something-here mhowlett/nginx_stub_status_prometheus nginx -c /absolute/path/to/mynginx.conf
+    docker run -d -v you-will-need-something-here mhowlett/nginx-stub-status-prometheus nginx -c /absolute/path/to/mynginx.conf
 
 ### Building
 
