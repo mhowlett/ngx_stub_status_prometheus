@@ -1,6 +1,6 @@
 # ngx_stub_status_prometheus
 
-This is an nginx module that provides the same information as the standard stub_status module but in a format recognized by the <a href="http://prometheus.io">prometheus</a> time-series database.
+This is an nginx module that provides the same information as the standard <a href="http://nginx.org/en/docs/http/ngx_http_stub_status_module.html">stub_status module</a> but in a format recognized by the <a href="http://prometheus.io">prometheus</a> time-series database.
 
 Information is currently only produced in the plain text exposition format. I will likely add the protobuf format in the future, though as noted in the Prometheus Client Library Guidelines document, any benefit would probably not be significant in most scenarios.
 
@@ -19,14 +19,14 @@ To make things even easier, this repo also includes:
 You can run the container like so:
 
     docker run -d -p 8000 mhowlett/ngx_stub_status_prometheus
-  
+
 This starts up nginx with a test configuration. If you browse to http://127.0.0.1:8000/metrics you should see the status information.
 
 To supply your own configuration, you could add a data volume at the standard nginx config file location:
 
     docker run -d -v mynginx.conf:/etc/nginx/nginx.conf mhowlett/nginx_stub_status_prometheus
 
-Or you could put it in a different location and specify this as an argument: 
+Or you could put it in a different location and specify this as an argument:
 
     docker run -d -v you-will-need-something-here mhowlett/nginx_stub_status_prometheus nginx -c /absolute/path/to/mynginx.conf
 
@@ -59,9 +59,9 @@ Here is a complete, minimalistic configuration:
     }
 
 
-In order to prevent public access, you can use the auto and deny directives, or https and basic auth as described here: http://prometheus.io/docs/operating/configuration/#scrape-configurations-scrape_config 
+In order to prevent public access, you can use the auto and deny directives, or https and basic auth as described here: http://prometheus.io/docs/operating/configuration/#scrape-configurations-scrape_config
 
-Unlike stub_status, stub_status_prometheus does not expose any variables corresponding to the status information. 
+Unlike stub_status, stub_status_prometheus does not expose any variables corresponding to the status information.
 If you need these, you can use the stub_status module alongside the prometheus status module.
 Note that the stub_status directive can be placed in a server context for this purpose (does not need to be placed in location context).
 
