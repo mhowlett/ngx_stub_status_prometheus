@@ -37,7 +37,7 @@ To cut a long story short:
 1. ./fetch-nginx.sh
 2. ./docker-up.sh
 3. cd /repo
-4. /build.sh
+4. ./build.sh
 5. /usr/sbin/nginx -c /repo/nginx.conf
 
 
