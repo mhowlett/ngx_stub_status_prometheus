@@ -18,7 +18,7 @@ To make things even easier, this repo also includes:
 
 You can run the container like so:
 
-    docker run -d -p 8000 mhowlett/ngx-stub-status-prometheus
+    docker run -d -p 8000:8000 mhowlett/ngx-stub-status-prometheus
 
 This starts up nginx with a test configuration. If you browse to http://127.0.0.1:8000/metrics you should see the status information.
 
